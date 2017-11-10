@@ -32,7 +32,8 @@ setup(name='hikyaku',
       install_requires=[
             'emails',
             'slackclient',
-            'boto3'
+            'boto3',
+            'munch'
       ],
       python_requires='>=2.7, <3',
 )
