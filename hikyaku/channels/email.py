@@ -30,7 +30,7 @@ class AmazonEmailSettings(HikyakuSettings):
 
 
 class EmailNotification(HikyakuNotification):
-    def __init__(self, subject, body, html_body, recipients, from_address,
+    def __init__(self, subject, body=None, html_body=None, recipients=None, from_address=None,
                  cc_recipients=None, bcc_recipients=None,**kwargs):
 
         super(EmailNotification, self).__init__(**kwargs)
@@ -58,8 +58,8 @@ class AmazonEmailNotifier(HikyakuNotifier):
         res = client.send_email(Source='kshehadeh@aws.ua-ecm.com',
                                 Destination={
                                     'ToAddresses': self.notification.recipients,
-                                    'CcAddresses': self.notification.cc_recipients,
-                                    'BccAddresses': self.notification.bcc_recipients
+                                    'CcAddresses': self.notification.cc_recipients or [],
+                                    'BccAddresses': self.notification.bcc_recipients or []
                                 },
                                 Message={
                                     'Subject': {
@@ -68,10 +68,10 @@ class AmazonEmailNotifier(HikyakuNotifier):
                                     },
                                     'Body': {
                                         'Text': {
-                                            'Data': self.notification.body
+                                            'Data': self.notification.body or ''
                                         },
                                         'Html': {
-                                            'Data': self.notification.html_body
+                                            'Data': self.notification.html_body or ''
                                         }
                                     }
                                 },

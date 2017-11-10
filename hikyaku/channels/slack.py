@@ -1,3 +1,5 @@
+from munch import Munch
+
 from hikyaku.base import HikyakuNotifier, HikyakuSettings, HikyakuNotification
 from slackclient import SlackClient
 import logging
@@ -13,6 +15,56 @@ class SlackSettings(HikyakuSettings):
         return "slack"
 
 
+class SlackAttachmentField(Munch):
+
+    def __init__(self,*args,**kwargs):
+        self.title = kwargs.pop('title',"")
+        self.value = kwargs.pop('value',"")
+        self.short = kwargs.pop('short',False)
+        super(SlackAttachmentField, self).__init__(*args,**kwargs)
+
+    def validate(self):
+        if not self.title:
+            raise ValueError("You must give a field a title")
+
+        if not self.value:
+            raise ValueError("You must give a field a value")
+
+        if not isinstance(self.short,bool):
+            raise ValueError("Unrecognized type given for 'short' field attribute")
+
+
+class SlackAttachment(Munch):
+    def __init__(self, *args, **kwargs):
+        self.fields = []
+        self.fallback = kwargs.pop('fallback',"")
+        self.color = kwargs.pop('color',"")
+        self.pretext = kwargs.pop('pretext',"")
+        self.author_name = kwargs.pop('author_name',"")
+        self.author_link = kwargs.pop('author_link',"")
+        self.author_icon = kwargs.pop('author_icon',"")
+        self.title = kwargs.pop('title',"")
+        self.title_link = kwargs.pop('title_link',"")
+        self.text = kwargs.pop('text',"")
+        self.image_url = kwargs.pop('image_url',"")
+        self.thumb_url = kwargs.pop('thumb_url',"")
+        self.footer = kwargs.pop('footer',"")
+        self.footer_icon = kwargs.pop('footer_icon',"")
+        self.ts = kwargs.pop('ts', 0)
+        super(SlackAttachment, self).__init__(*args,**kwargs)
+
+    def add_field(self, field):
+        assert isinstance(field,SlackAttachmentField)
+        self.fields.append(field)
+
+    def validate(self):
+        if not self.fallback:
+            raise ValueError("You must specify fallback text for a slack attachment")
+
+        for field in self.fields:
+            field.validate()
+
+
 class SlackNotification(HikyakuNotification):
     """
     Slack notifications use  the python slack API.
@@ -25,14 +77,14 @@ class SlackNotification(HikyakuNotification):
 
 
     """
-    def __init__(self, text, channel=None, users=None, **kwargs):
-        assert(text)
+    def __init__(self, text, channel=None, users=None, attachments=None, **kwargs):
         assert(isinstance(channel,(str,unicode)) or not channel)
         assert(isinstance(users,(list,tuple)) or not users)
 
         self.channel = channel
         self.users = users
         self.text = text
+        self.attachments = attachments
 
         super(SlackNotification, self).__init__(**kwargs)
 
@@ -52,7 +104,8 @@ class SlackNotifier(HikyakuNotifier):
             self.last_result = sc.api_call(
                 "chat.postMessage",
                 channel=self.notification.channel,
-                text=self.notification.text
+                text=self.notification.text,
+                attachments=self.notification.attachments
             )
             if self.last_result and self.last_result['ok']:
                 return True
@@ -77,7 +130,8 @@ class SlackNotifier(HikyakuNotifier):
                 self.last_result = sc.api_call(
                     "chat.postMessage",
                     channel=channel,
-                    text=self.notification.text
+                    text=self.notification.text,
+                    attachments=self.notification.attachments
                 )
                 if self.last_result:
                     return 'ok' in self.last_result and self.last_result['ok']
