@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='hikyaku',
-      version='0.1',
+      version='0.2',
       description='A messaging library that wraps multiple messaging protocols into one easy to use package.',
       url='',
       author='Karim Shehadeh',
