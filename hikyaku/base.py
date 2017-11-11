@@ -1,12 +1,15 @@
 import json
 
-class HikyakuSettings(object):
+from munch import Munch
+
+
+class HikyakuSettings(Munch):
     """
     The settings object contains information about how to send the notification within the given notifier type. This
     is almost always specific to the notifier.
     """
-    def __init__(self):
-        pass
+    def __init__(self, *args, **kwargs):
+        super(HikyakuSettings, self).__init__(*args,**kwargs)
 
     def get_config_name(self):
         raise NotImplementedError()
@@ -43,15 +46,14 @@ class HikyakuSettings(object):
 
 
 
-class HikyakuNotification(object):
+class HikyakuNotification(Munch):
     """
     This is the base class which contains data that is part of the payload being sent via the notifier.
     While there is not necessarily a notification class for each notifier, in many cases notifiers can send
     information in ways that are unique to that delivery channel
     """
-    def __init__(self, message=None, title=None):
-        self.message = message
-        self.title = title
+    def __init__(self, *args, **kwargs):
+        super(HikyakuNotification, self).__init__(*args, **kwargs)
 
 
 class HikyakuNotifier(object):

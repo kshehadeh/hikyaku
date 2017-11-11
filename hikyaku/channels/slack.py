@@ -1,3 +1,5 @@
+import copy
+
 from munch import Munch
 
 from hikyaku.base import HikyakuNotifier, HikyakuSettings, HikyakuNotification
@@ -77,14 +79,14 @@ class SlackNotification(HikyakuNotification):
 
 
     """
-    def __init__(self, text, channel=None, users=None, attachments=None, **kwargs):
-        assert(isinstance(channel,(str,unicode)) or not channel)
-        assert(isinstance(users,(list,tuple)) or not users)
-
-        self.channel = channel
-        self.users = users
-        self.text = text
-        self.attachments = attachments
+    def __init__(self, **kwargs):
+        self.channel = kwargs.pop('channel',None)
+        self.users = kwargs.pop('users',None)
+        self.text = kwargs.pop('text',None)
+        self.attachments = kwargs.pop('attachments',None)
+        self.username = kwargs.pop('username',None)
+        self.icon_url = kwargs.pop('icon_url',None)
+        self.icon_emoji = kwargs.pop('icon_emoji',None)
 
         super(SlackNotification, self).__init__(**kwargs)
 
@@ -103,9 +105,7 @@ class SlackNotifier(HikyakuNotifier):
             # if a specific channel was given we can just post a message to the existing channel.
             self.last_result = sc.api_call(
                 "chat.postMessage",
-                channel=self.notification.channel,
-                text=self.notification.text,
-                attachments=self.notification.attachments
+                **self.notification
             )
             if self.last_result and self.last_result['ok']:
                 return True
@@ -126,12 +126,13 @@ class SlackNotifier(HikyakuNotifier):
 
             if result and result['ok']:
                 # now send the message to the "channel" which is either a direct message or multi-direct message
-                channel = result['channel']['id']
+                notification = copy.deepcopy(self.notification)
+                notification.channel = result['channel']['id']
+                notification.users = None
+
                 self.last_result = sc.api_call(
                     "chat.postMessage",
-                    channel=channel,
-                    text=self.notification.text,
-                    attachments=self.notification.attachments
+                    **notification
                 )
                 if self.last_result:
                     return 'ok' in self.last_result and self.last_result['ok']
