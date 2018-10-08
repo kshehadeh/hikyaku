@@ -18,7 +18,7 @@ class HikyakuSettings(Munch):
 
         json_ob = None
 
-        if isinstance(json_file_or_ob,(str, unicode)):
+        if isinstance(json_file_or_ob,str):
             with open(json_file_or_ob,'r+') as f:
                 json_ob = json.load(f)
         elif isinstance(json_file_or_ob,(dict)):
@@ -36,14 +36,13 @@ class HikyakuSettings(Munch):
 
         config_data = json_ob[self.get_config_name()]
         assert isinstance(config_data,dict)
-        for k,v in config_data.iteritems():
+        for k,v in config_data.items():
             if hasattr(self,k):
                 if isinstance(v,str):
                     # convert to unicode if necessary
-                    v = unicode(v)
+                    v = str(v)
 
                 setattr(self,k,v)
-
 
 
 class HikyakuNotification(Munch):

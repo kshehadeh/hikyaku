@@ -4,7 +4,19 @@ import logging
 import emails
 
 
-class SmtpEmailSettings(HikyakuSettings):
+class EmailSettings(HikyakuSettings):
+    def __init__(self, **kwargs):
+        super(EmailSettings, self).__init__(**kwargs)
+        self.subject=kwargs.get("subject", "Test Subject")
+        self.html_body=kwargs.get("html_body", "<h1>Test Body</h1>")
+        self.body=kwargs.get("body", "Test Body")
+        self.recipients=kwargs.get("recipients", [])
+        self.cc_recipients=kwargs.get("cc_recipients", [])
+        self.bcc_recipients=kwargs.get("bcc_recipients", [])
+        self.from_address=kwargs.get("from_address", "")
+
+
+class SmtpEmailSettings(EmailSettings):
     def __init__(self, **kwargs):
         super(SmtpEmailSettings, self).__init__()
         self.host = kwargs['host'] if 'host' in kwargs else ""
@@ -17,10 +29,12 @@ class SmtpEmailSettings(HikyakuSettings):
         return "smtp"
 
 
-class AmazonEmailSettings(HikyakuSettings):
+class AmazonEmailSettings(EmailSettings):
 
     def __init__(self, **kwargs):
-        super(AmazonEmailSettings, self).__init__()
+        super(AmazonEmailSettings, self).__init__(**kwargs)
+        self.aws_access_key_id = kwargs['aws_access_key_id'] if 'aws_access_key_id' in kwargs else None
+        self.aws_secret_access_key = kwargs['aws_secret_access_key'] if 'aws_secret_access_key' in kwargs else None
         self.region_name = kwargs['region_name'] if 'region_name' in kwargs else ""
         self.charset = kwargs['charset'] if 'region_name' in kwargs else 'utf-8'
         self.reply_to_addresses = kwargs['reply_to_addresses'] if 'reply_to_addresses' in kwargs else []
@@ -37,7 +51,7 @@ class EmailNotification(HikyakuNotification):
         assert subject
         assert(html_body or body)
         assert(isinstance(recipients,(list,tuple,dict)))
-        assert(isinstance(from_address,(str,unicode) or from_address is None))
+        assert(isinstance(from_address,(str,str) or from_address is None))
         self.subject = subject
         self.html_body = html_body
         self.body = body
@@ -54,8 +68,12 @@ class AmazonEmailNotifier(HikyakuNotifier):
         super(AmazonEmailNotifier, self).__init__(*args, **kwargs)
 
     def send(self):
-        client = boto3.client('ses',region_name=self.settings.region_name)
-        res = client.send_email(Source='kshehadeh@aws.ua-ecm.com',
+        client = boto3.client('ses',
+                              region_name=self.settings.region_name,
+                              aws_access_key_id=self.settings.aws_access_key_id,
+                              aws_secret_access_key=self.settings.aws_secret_access_key)
+
+        res = client.send_email(Source=self.notification.from_address,
                                 Destination={
                                     'ToAddresses': self.notification.recipients,
                                     'CcAddresses': self.notification.cc_recipients or [],

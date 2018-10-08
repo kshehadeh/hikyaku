@@ -4,7 +4,6 @@ from munch import Munch
 
 from hikyaku.base import HikyakuNotifier, HikyakuSettings, HikyakuNotification
 from slackclient import SlackClient
-import logging
 
 
 class SlackSettings(HikyakuSettings):

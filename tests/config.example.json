@@ -1,0 +1,27 @@
+{
+  "smtp": {
+    "host": "smtp.mysmtp.io",
+    "port": "2525",
+    "username": "",
+    "password": "",
+    "mode": "tls"
+  },
+  "aws": {
+    "region_name": "us-west-2",
+    "charset": "utf-8",
+    "aws_client_key": "",
+    "aws_client_secret": ""
+  },
+  "slack":{
+    "api_token": ""
+  },
+  "email": {
+    "subject": "Test Subject",
+    "body_text": "Test Text Body",
+    "body_html": "<h1>Test HTML Body</h1>",
+    "recipients": ["recip@email.com"],
+    "cc_recipients": ["cc@email.com"],
+    "bcc_recipients": ["bcc@email.com"],
+    "from_address": "from@email.com"
+  }
+}

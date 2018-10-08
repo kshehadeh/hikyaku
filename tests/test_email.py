@@ -1,4 +1,6 @@
 import os
+import unittest
+
 import hikyaku
 from unittest import TestCase
 
@@ -15,13 +17,13 @@ class TestEmailNotifier(TestCase):
         settings.import_json(self.config_file)
 
         notification = EmailNotification(
-            subject="Test Subject",
-            html_body="<h1>Test HTML Body</h1>",
-            body="Test Text Body",
-            recipients=["karim@karim.cloud"],
-            cc_recipients=["kshehadeh@underarmour.com"],
-            bcc_recipients=["karim.shehadeh@gmail.com"],
-            from_address="kshehadeh@ua-ecm.com"
+            subject=settings.subject,
+            html_body=settings.html_body,
+            body=settings.body,
+            recipients=settings.recipients,
+            cc_recipients=settings.cc_recipients,
+            bcc_recipients=settings.bcc_recipients,
+            from_address=settings.from_address
         )
 
         result = hikyaku.send_aws_email_notification(settings,notification)
@@ -32,16 +34,19 @@ class TestEmailNotifier(TestCase):
         settings.import_json(self.config_file)
 
         notification = EmailNotification(
-            subject="Test Subject",
-            html_body="<h1>Test HTML Body</h1>",
-            body="Test Text Body",
-            recipients=["karim@karim.cloud"],
-            cc_recipients=["kshehadeh@underarmour.com"],
-            bcc_recipients=["karim.shehadeh@gmail.com"],
-            from_address="kshehadeh@ua-ecm.com"
+            subject=settings.subject,
+            html_body=settings.html_body,
+            body=settings.body,
+            recipients=settings.recipients,
+            cc_recipients=settings.cc_recipients,
+            bcc_recipients=settings.bcc_recipients,
+            from_address=settings.from_address
         )
 
         result = hikyaku.send_smtp_email_notification(settings,notification)
         self.assertTrue(result)
 
+
+if __name__ == '__main__':
+    unittest.main()
 

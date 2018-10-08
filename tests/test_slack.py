@@ -1,4 +1,5 @@
 import os
+import unittest
 from unittest import TestCase
 
 import hikyaku
@@ -33,3 +34,7 @@ class TestSlackNotifier(TestCase):
 
         result = hikyaku.send_slack_notification(settings,notification)
         self.assertTrue(result)
+
+
+if __name__ == '__main__':
+    unittest.main()
