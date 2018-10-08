@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(name='hikyaku',
-      version='0.2.1',
+      version='0.2.2',
       description='A messaging library that wraps multiple messaging protocols into one easy to use package.',
       url='',
       author='Karim Shehadeh',
-      author_email='kshehadeh@underarmour.com',
+      author_email='karim@karim.cloud',
       license='MIT',
       packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
       zip_safe=False,
@@ -28,7 +28,7 @@ setup(name='hikyaku',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.6',
       ],
-      keywords="messaging email slack notificiation communication",
+      keywords="messaging email slack notification communication",
       install_requires=[
             'emails',
             'slackclient',

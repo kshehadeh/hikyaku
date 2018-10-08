@@ -2,4 +2,5 @@ hikyaku.iml
 tests/config.json
 /hikyaku.egg-info/
 /dist/
+/build/
 *.pyc
